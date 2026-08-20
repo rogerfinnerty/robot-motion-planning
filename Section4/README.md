@@ -35,11 +35,22 @@ This section focuses on discrete graph search for planning and two-link manipula
   - Creates a graph of SphereWorld, discretized with `nb_cells` and solves with A\* planner for multiple starting and goal locations.
     ![sphereworld graph goal 0](assets/sphereworld_20cells_goal1.gif)
 
-- `twolink_search_plot_solution(theta_path)`
+- `twolink_test_path(theta_path)`
   - Plots a two-link configuration path both on the configuration-space graph and in the workspace.
+
+<p float="left">
+  <img src="assets/twolink_test_path.gif" width="55%" alt="Workspace view" />
+  <img src="assets/twolink_configuration_space_test_plot.png" width="38%" alt="Configuration space" />
+</p>
+
+- `two_link_search(theta_start, theta_goal)`
+  - Use the A\* planner to move the manipulator from `theta_start` to `theta_goal`.
   - Calls the `TwoLink.animate` helper to create a workspace animation; the animator can accept an `axes=` argument so the manipulator is drawn on top of an existing world plot and saved as a GIF.
-    ![two-link workspace](assets/twolink_animation.gif)
-    ![configuration plot](assets/twolink_configuration_space.png)
+
+  <p float="left">
+    <img src="assets/twolink_solved.gif" width="55%" alt="Workspace view"/>
+    <img src="assets/twolink_configuration_space.png" width="38%" alt="Configuration view/>
+  </p>
 
 ## Notes on Animation and README GIFs
 

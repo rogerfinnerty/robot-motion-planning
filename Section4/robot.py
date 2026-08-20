@@ -97,7 +97,7 @@ class TwoLink:
         polygon1_transf.plot(axes=axes, color=color)
         polygon2_transf.plot(axes=axes, color=color)
 
-    def animate(self, theta: np.ndarray, outname: str = 'assets/twolink_animation.gif', axes=None) -> None:
+    def animate(self, theta: np.ndarray, outname: str, axes=None) -> None:
         """
         Draw the two-link manipulator for each column in theta 
         with a small pause between each drawing operation
@@ -108,7 +108,7 @@ class TwoLink:
         pause = 1.0
 
         # Load obstacle points once
-        test_data = scio.loadmat('twolink_testData.mat')
+        test_data = scio.loadmat('data/twolink_testData.mat')
         obstacle_points = test_data['obstaclePoints']
 
         # Create temporary directory for frames
@@ -223,7 +223,7 @@ def load_free_space_grid() -> geometry.Grid:
     """
 Loads the contents of the file ! twolink_freeSpace_data.mat
     """
-    test_data = scio.loadmat('twolink_freeSpace_data.mat')
+    test_data = scio.loadmat('data/twolink_freeSpace_data.mat')
     test_data = test_data['grid'][0][0]
     grid = geometry.Grid(test_data[0], test_data[1])
     grid.fun_evalued = test_data[2]

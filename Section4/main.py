@@ -67,24 +67,39 @@ def graph_search_test(save_img=False, outname='assets/graph_search_test.gif'):
         plt.savefig('assets/graph_search_test.png')
         print("Graph search test image saved to assets/graph_search_test.png")
 
-def two_link_plot(theta_path):
+def two_link_plot(theta_path, outname):
     '''
     Plot a two-link path both on the graph and in the workspace
     '''
     twolink_graph = robot.TwoLinkGraph()
-    plt.figure(1)
-    twolink_graph.plot()
-    plt.plot(theta_path[0, :], theta_path[1, :], 'r')
 
+    # Configuration space plot
+    fig_config, ax_config = plt.subplots(figsize=(6, 6))
+    twolink_graph.plot()
+    ax_config.plot(theta_path[0, :], theta_path[1, :], 'r', linewidth=2)
+    ax_config.set_xlabel(r'$\theta_1$ (rad)')
+    ax_config.set_ylabel(r'$\theta_2$ (rad)')
+    ax_config.set_title('Two-link configuration space')
+    ax_config.set_aspect('equal', adjustable='box')
+
+    # Workspace plot and animation
     twolink = robot.TwoLink()
-    obstacle_points = scio.loadmat('twolink_testData.mat')['obstaclePoints']
+    obstacle_points = scio.loadmat('data/twolink_testData.mat')['obstaclePoints']
     fig, ax = plt.subplots()
     ax.scatter(obstacle_points[0, :], obstacle_points[1, :], marker='*')
-    twolink.animate(theta_path, outname='assets/twolink_animation.gif', axes=ax)
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_title('Two-link manipulator workspace')
+    twolink.animate(theta_path, outname, axes=ax)
+
+    os.makedirs('assets', exist_ok=True)
+    config_path = os.path.join('assets', 'twolink_configuration_space_test_plot.png')
+    fig_config.savefig(config_path, dpi=200, bbox_inches='tight')
+    print(f"Saved configuration-space figure to {config_path}")
 
     plt.show()
 
-def twolink_test_path(theta_m):
+def twolink_test_path(theta_m, outname='assets/twolink_test_path.gif'):
     '''
     Visualize, both in the graph, and in the workspace, a sample path where the second link 
     rotates and then the first link rotates (both with constant speeds).
@@ -93,13 +108,13 @@ def twolink_test_path(theta_m):
     theta_path = np.hstack(
         (theta_path,
          np.vstack((np.linspace(0, theta_m, 75), theta_m * np.ones((1, 75))))))
-    two_link_plot(theta_path)
+    two_link_plot(theta_path, outname)
 
-def two_link_search(theta_start: np.ndarray, theta_goal: np.ndarray):
+def two_link_search(theta_start: np.ndarray, theta_goal: np.ndarray, outname='assets/twolink_solved.gif'):
     """
     Test the two-link path planning functionality.
     """
-    test_data = scio.loadmat('twolink_testData.mat')
+    test_data = scio.loadmat('data/twolink_testData.mat')
     obstacle_points = test_data['obstaclePoints']
 
     two_link = robot.TwoLink()  # for plot animation
@@ -113,7 +128,7 @@ def two_link_search(theta_start: np.ndarray, theta_goal: np.ndarray):
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_title('Two-link manipulator workspace')
-    two_link.animate(theta_path, outname='assets/twolink_animation.gif', axes=ax)
+    two_link.animate(theta_path, outname, axes=ax)
 
     # Plot the configuration space with the path in joint-angle coordinates
     fig_config, ax_config = plt.subplots(figsize=(6, 6))
@@ -163,11 +178,11 @@ if __name__=='__main__':
     # plt.show()
 
     # # Animate a sample two-link path where the second link rotates and then the first link rotates (both with constant speeds)
-    # theta_m = 3 / 4 * np.pi
-    # twolink_test_path(theta_m)
-    # plt.show()
+    theta_m = 3 / 4 * np.pi
+    twolink_test_path(theta_m, outname='assets/twolink_test_path.gif')
+    plt.show()
 
     # Two-link path planning
-    theta_start = np.array([[0.76], [0.12]])
-    theta_goal = np.array([[2.72], [5.45]])
-    two_link_search(theta_start, theta_goal)
+    # theta_start = np.array([[0.76], [0.12]])
+    # theta_goal = np.array([[2.72], [5.45]])
+    # two_link_search(theta_start, theta_goal, outname='assets/twolink_solved.gif')
