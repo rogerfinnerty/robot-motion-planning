@@ -2,10 +2,15 @@
 ME570 homework 3
 """
 import os
+import sys
 
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib.animation import FuncAnimation
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
+sys.path.append("..")
+from utils.animate import canvas_to_rgb, save_gif_from_images
+
 import geometry as geometry
 import potential as pot
 import robot as robot
@@ -130,20 +135,18 @@ def planner_run_plot_test(rep_wgt=1, shape='quadratic', lr=1e-2, steps=1000, sav
                 frame_step = 40
                 frame_indices = range(0, max_frames, frame_step)
 
-                animation = FuncAnimation(
-                    animation_fig, 
-                    update, 
-                    frames=frame_indices, 
-                    interval=10, 
-                    blit=False
-                )
-                animation.save(
-                    f'assets/planner_path_animation_goal_{goal_idx}.gif', 
-                    writer='pillow',
-                    fps=10
-                )
+                gif_path = f'assets/planner_path_animation_goal_{goal_idx}.gif'
+                frames = []
+                canvas = FigureCanvas(animation_fig)
+                for frame in frame_indices:
+                    update(frame)
+                    # draw on the FigureCanvasAgg instance to get a stable buffer
+                    canvas.draw()
+                    frames.append(canvas_to_rgb(canvas))
+
+                save_gif_from_images(frames, gif_path, duration=1/10)
                 plt.close(animation_fig)
-                print(f"Saved animation for goal {goal_idx} as 'assets/planner_path_animation_goal_{goal_idx}.gif'")
+                print(f"Saved animation for goal {goal_idx} as '{gif_path}'")
 
 def clfcbf_control_test_singlesphere(save_img=False):
     """
@@ -344,7 +347,7 @@ if __name__ == '__main__':
     # plot_sphere_potential_fields(save_plot=True)
         
     # Potential-based planning 
-    # run_planner_test(save_plot=True)
+    run_planner_test(save_plot=True)
 
     # 3D potential plot
     # plot_3d_potential(save_plot=True)
@@ -354,8 +357,9 @@ if __name__ == '__main__':
     
     # plot_clfcbf_control_3_5()
     # plot_sphere_world_control_field(save_plot=True)
+    # plt.show()
 
-    two_link_sphere_world(save_gif=True)
+    # two_link_sphere_world(save_gif=True)
     # plt.show()
 
     pass

@@ -15,6 +15,11 @@ import geometry
 import queue
 import imageio
 
+import sys
+
+sys.path.append('..')
+from utils.animate import canvas_to_rgb, save_gif_from_images
+
 class PriorityQueue:
     """ Implements a priority queue """
     def __init__(self):
@@ -747,11 +752,7 @@ class SphereWorldGraph:
                     line.set_data(x_path[0, :k], x_path[1, :k])
                     point.set_data([x_path[0, k - 1]], [x_path[1, k - 1]])
                     fig.canvas.draw()
-                    w, h = canvas.get_width_height()
-                    buf = canvas.tostring_argb()
-                    arr = np.frombuffer(buf, dtype='uint8').reshape((h, w, 4))
-                    img = arr[:, :, 1:4].copy()
-                    images.append(img)
+                    images.append(canvas_to_rgb(canvas))
                     plt.pause(0.05)
 
             if save_img and images:

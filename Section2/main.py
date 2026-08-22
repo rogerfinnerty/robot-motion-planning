@@ -7,7 +7,6 @@ import os
 
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 from scipy import io as scio
 

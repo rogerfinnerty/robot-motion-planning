@@ -2,17 +2,21 @@
 Combine the classes below with the file me570_robot.py from previous assignments
 """
 import math
-import numpy as np
-from scipy import io as scio
+import os
+import shutil
+import tempfile
+from typing import Tuple
+
+import imageio
 import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from scipy import io as scio
+from utils.animate import canvas_to_rgb, save_gif_from_images
+
 import geometry as geometry
 import graph as graph
-import imageio
-import tempfile
-import shutil
-import os
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from typing import Tuple
+
 
 def polygons_generate() -> Tuple[geometry.Polygon, geometry.Polygon]:
     """
@@ -152,10 +156,7 @@ class TwoLink:
                     # Draw and capture
                     canvas.draw()
                     frame_path = os.path.join(tmpdir, f'frame_{i_theta:04d}.png')
-                    w, h = canvas.get_width_height()
-                    buf = canvas.tostring_argb()
-                    arr = np.frombuffer(buf, dtype='uint8').reshape((h, w, 4))
-                    img = arr[:, :, 1:4].copy()
+                    img = canvas_to_rgb(canvas)
 
                     # Write PNG
                     imageio.v2.imwrite(frame_path, img)

@@ -13,6 +13,7 @@ from matplotlib.animation import FuncAnimation
 import imageio
 import os
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from utils.animate import canvas_to_rgb, save_gif_from_images
 # import me570_robot as robot
 
 def polygons_generate():
@@ -151,12 +152,7 @@ class TwoLink:
 
                 # Render to Agg canvas and capture RGB buffer robustly
                 canvas.draw()
-                w, h = canvas.get_width_height()
-                buf = canvas.tostring_argb()
-                arr = np.frombuffer(buf, dtype='uint8').reshape((h, w, 4))
-                img = arr[:, :, 1:4].copy()
-
-                images.append(img)
+                images.append(canvas_to_rgb(canvas))
 
                 # Clear manipulator drawings
                 if not created_fig:
@@ -173,7 +169,7 @@ class TwoLink:
                 plt.pause(pause)
 
             if images:
-                imageio.mimsave(outfile, images, duration=pause, loop=0)
+                save_gif_from_images(images, outfile, duration=pause)
                 print(f"Saved animation to {outfile}")
             if created_fig:
                 plt.close(fig)
